@@ -14,8 +14,10 @@ News
     <h1>Все новости</h1>
     <h5>Количество новостей: {{ news|length }}</h5>
 
-    {% if perms.News.new_create %}
+    {% if perms.News.new_create or perms.News.article_create %}
     <a href="{% url 'new_create' %}">Добавить Новость</a>
+    <a href="{% url 'article_create' %}">Добавить Статью</a>
+
     {% endif %}
 
 
@@ -26,7 +28,6 @@ News
             <td>Дата публикации</td>
             <td>Содержание</td>
             <td>Категория</td>
-                            {# Условие получается составным. #}
                 {% if perms.News.new_create or perms.News.new_delete %}
                 <td>Действия</td>
                 {% endif %}
@@ -39,12 +40,22 @@ News
             <td>{{ n.text|truncatechars:20|censor }}</td>
             <td>{{n.categoryType}}</td>
             <td>
+            {% if n.categoryType == 'NV' %}
+
                 {% if perms.News.new_edit %}
-                    <a href="{% url 'new_edit' pk=n.id %}">Изменить</a>
+                    <a href="{% url 'new_edit' pk=n.id %}">Изменить /</a>
                 {% endif %}
-                 {% if perms.News.new_delete %}
-                    <a href="{% url 'new_delete' n.id %}">Удалить</a>
+                {% if perms.News.new_delete %}
+                    <a href="{% url 'new_delete' n.id %}">Удалить новость</a>
                 {% endif %}
+            {%elif n.categoryType == 'AR'%}
+                {% if perms.News.article_edit %}
+                    <a href="{% url 'article_edit' pk=n.id %}">Изменить /</a>
+                {% endif %}
+                {% if perms.News.article_delete %}
+                    <a href="{% url 'article_delete' n.id %}">Удалить статью</a>
+                {% endif %}
+            {%endif%}
 
             </td>
         </tr>
